@@ -1,0 +1,85 @@
+#include <iostream>
+#include <cmath>
+
+class Equation
+{
+public:
+    virtual void roots() const = 0;
+    virtual ~Equation() {}
+};
+
+class LinearEquation : public Equation
+{
+private:
+    double a, b;
+public:
+    LinearEquation(double a, double b) : a(a), b(b) {}
+
+    void roots() const override
+    {
+        if (a == 0)
+        {
+            if (b == 0)
+            {
+                std::cout << "The equation has many roots.\n";
+            }
+            else
+            {
+                std::cout << "The equation has no roots.\n";
+            }
+        }
+        else
+        {
+            double x = -b / a;
+            std::cout << "Root of a linear equation: x = " << x << "\n";
+        }
+    }
+};
+
+class QuadraticEquation : public Equation
+{
+private:
+    double a, b, c;
+public:
+    QuadraticEquation(double a, double b, double c) : a(a), b(b), c(c) {}
+
+    void roots() const override
+    {
+        if (a == 0)
+        {
+            LinearEquation(b, c).roots();
+            return;
+        }
+
+        double D = b * b - 4 * a * c;
+        if (D > 0)
+        {
+            double x1 = (-b + std::sqrt(D)) / (2 * a);
+            double x2 = (-b - std::sqrt(D)) / (2 * a);
+            std::cout << "Two roots: x1 = " << x1 << ", x2 = " << x2 << "\n";
+        }
+        else if (D == 0)
+        {
+            double x = -b / (2 * a);
+            std::cout << "One root: x = " << x << "\n";
+        }
+        else
+        {
+            std::cout << "There are no real roots.\n";
+        }
+    }
+};
+
+int main()
+{
+    Equation* eq1 = new LinearEquation(4, 124);
+    Equation* eq2 = new QuadraticEquation(5, -7, 2);
+
+    eq1->roots();
+    eq2->roots();
+
+    delete eq1;
+    delete eq2;
+
+    return 0;
+}
