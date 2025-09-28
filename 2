@@ -1,0 +1,188 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+class Shape
+{
+public:
+    virtual void Show() const = 0;
+    virtual void Save(std::ofstream& out) const = 0;
+    virtual void Load(std::ifstream& in) = 0;
+    virtual std::string Type() const = 0;
+    virtual ~Shape() {}
+};
+
+class Square : public Shape
+{
+private:
+    int x, y;
+    int side;
+public:
+    Square(int x = 0, int y = 0, int s = 0) : x(x), y(y), side(s) {}
+
+    void Show() const override
+    {
+        std::cout << "Square: (" << x << ", " << y << "), side = " << side << "\n";
+    }
+
+    void Save(std::ofstream& out) const override
+    {
+        out << "Square " << x << " " << y << " " << side << "\n";
+    }
+
+    void Load(std::ifstream& in) override
+    {
+        in >> x >> y >> side;
+    }
+
+    std::string Type() const override
+    {
+        return "Square";
+    }
+};
+
+class Rectangle : public Shape
+{
+private:
+    int x, y;
+    int width, height;
+public:
+    Rectangle(int x = 0, int y = 0, int w = 0, int h = 0) : x(x), y(y), width(w), height(h) {}
+
+    void Show() const override
+    {
+        std::cout << "Rectangle: (" << x << ", " << y << "), width = " << width << ", height = " << height << "\n";
+    }
+
+    void Save(std::ofstream& out) const override
+    {
+        out << "Rectangle " << x << " " << y << " " << width << " " << height << "\n";
+    }
+
+    void Load(std::ifstream& in) override
+    {
+        in >> x >> y >> width >> height;
+    }
+
+    std::string Type() const override
+    {
+        return "Rectangle";
+    }
+};
+
+class Circle : public Shape
+{
+private:
+    int x, y;
+    int radius;
+public:
+    Circle(int x = 0, int y = 0, int r = 0) : x(x), y(y), radius(r) {}
+
+    void Show() const override
+    {
+        std::cout << "Circle: center(" << x << ", " << y << "), radius = " << radius << "\n";
+    }
+
+    void Save(std::ofstream& out) const override
+    {
+        out << "Circle " << x << " " << y << " " << radius << "\n";
+    }
+
+    void Load(std::ifstream& in) override
+    {
+        in >> x >> y >> radius;
+    }
+
+    std::string Type() const override
+    {
+        return "Circle";
+    }
+};
+
+class Ellipse : public Shape
+{
+private:
+    int x, y;
+    int width, height;
+public:
+    Ellipse(int x = 0, int y = 0, int w = 0, int h = 0) : x(x), y(y), width(w), height(h) {}
+
+    void Show() const override
+    {
+        std::cout << "Ellipse: (" << x << ", " << y << "), width = " << width << ", height = " << height << "\n";
+    }
+
+    void Save(std::ofstream& out) const override
+    {
+        out << "Ellipse " << x << " " << y << " " << width << " " << height << "\n";
+    }
+
+    void Load(std::ifstream& in) override
+    {
+        in >> x >> y >> width >> height;
+    }
+
+    std::string Type() const override
+    {
+        return "Ellipse";
+    }
+};
+
+int main()
+{
+    const int N = 4;
+    Shape* shapes[N];
+
+    shapes[0] = new Square(0, 0, 10);
+    shapes[1] = new Rectangle(5, 5, 20, 15);
+    shapes[2] = new Circle(10, 10, 7);
+    shapes[3] = new Ellipse(2, 2, 12, 6);
+
+    std::ofstream fout("shapes.txt");
+    for (int i = 0; i < N; i++)
+    {
+        shapes[i]->Save(fout);
+    }
+    fout.close();
+
+    for (int i = 0; i < N; i++)
+    {
+        delete shapes[i];
+    }
+
+    Shape* loaded[N]{};
+    std::ifstream fin("shapes.txt");
+    std::string type;
+    int count = 0;
+    while (fin >> type && count < N)
+    {
+        if (type == "Square")
+        {
+            loaded[count] = new Square();
+        }
+        else if (type == "Rectangle")
+        {
+            loaded[count] = new Rectangle();
+        }
+        else if (type == "Circle")
+        {
+            loaded[count] = new Circle();
+        }
+        else if (type == "Ellipse")
+        {
+            loaded[count] = new Ellipse();
+        }
+        loaded[count]->Load(fin);
+        count++;
+    }
+    fin.close();
+
+    std::cout << "Loaded shapes:\n";
+    for (int i = 0; i < count; i++)
+    {
+        loaded[i]->Show();
+        delete loaded[i];
+    }
+
+    return 0;
+}
